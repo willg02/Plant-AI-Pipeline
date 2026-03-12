@@ -1,0 +1,358 @@
+# Paste your plant names here, one per line.
+# Example:
+# Knockout Rose
+# Japanese Maple
+# Blue Rug Juniper
+# Endless Summer Hydrangea
+# Dwarf Yaupon Holly
+Distylium:
+Swing low
+Coppertone
+Cast in bronze
+Blue cascade
+Emerald heights
+Linebacker
+Cinnamon girl
+
+Ligustrum:
+Dwarf curly leaf
+Recurvifolium
+Sunshine
+Swift creek
+
+Osmanthus:
+Fragrans
+Noble lady
+
+Anise:
+Woodland ruby
+Illicium parviflorum anise
+
+Viburnums:
+Chinese snowbell
+Yardline
+Moonlit lace
+Steady Eddy
+‘Tinus shades of pink
+Chindo
+
+Gardenia:
+Jubilation
+Double mint
+Diamond spire
+Frost proof
+Snow girl
+Summer snow
+Daisy duke
+Radicans
+
+Pieris:
+Prelude
+Historyland supreme
+Scarlet O’Hara
+Dorothy wycoff
+Purity
+Katsura
+
+Mojo dwarf pittosporum
+
+Yews:
+Prostrate Japanese plum
+Duke gardens
+Fastigiata
+Southern
+Golden dragon
+
+Cleyera japonica
+
+Rhododendrons:
+Catawbiense album
+Catawbiense grandiflorum
+Purpureum elegans
+Besse howells
+Nova zembla
+Yaku princess
+
+Hydrangea:
+Wee bit giddy
+Fire light tidbit
+Quick fire fab
+Pinky winky prime
+Limelight prime
+Limelight
+Bobo
+Strawberry sundae
+Grin and tonic
+Nantucket blue
+Eclipse
+Annabelle
+The original
+Bloomstruck
+Ruby slippers
+Alice oakleaf
+Snow queen oakleaf
+
+Southern azalea:
+Girards Renee Michelle
+Sunglow
+Conversation piece
+Gumpo pink
+Gumpo white
+Karen
+Girards crimson
+Formosa
+Pink ruffles
+Buccaneer
+G.g. Gerbing
+George tabor
+Delaware valley
+Hardy gardenia
+Girards rose
+
+Rebloom azaleas:
+Autumn moonlight
+Autumn princess
+Autumn empress
+Autumn majesty
+Autumn carnation
+Autumn angel
+Autumn lily
+Autumn bonfire
+Autumn sunset
+Pink adoration
+Purple spectacular
+Firebrick fame
+Coral amazement
+Perfecto mundo double purple
+Perfecto Mundo orange
+Perfecto mundo red
+Red magnificence patio tree
+
+Mahonias:
+Soft caress
+Funky flow
+Indigo flair
+
+Nandina:
+Flirt
+Obsession
+Goldstream
+Firepower
+Domestica
+Boxwood:
+Wintergreen
+Newgen freedom
+Newgen independence
+Variegated
+Green Beauty
+
+Butterfly bush:
+Birthday cake
+Lo&behold blue chip jr
+Dapper white
+Miss Molly
+True blue
+Black knight
+Lo&behold pink micro chip
+Miss violet
+Blueberry pie
+
+Abelia:
+Kaleidoscope
+Radiance
+Rose creek
+
+Lorepetalum:
+Jazz hand white
+Jazz hands pink
+Jazz hands variegated
+Zhouzhou fuschia
+Daruma
+Crimson fire
+Cerise charm
+
+Forsythia:
+Showy border
+Lynwood
+
+Otto luyken laurel
+Fragrant valley Himalayan sweetbox
+
+Rose of Sharon:
+White pillar
+Purple pillar
+
+Chaste tree:
+Flip side
+Shoal creek
+
+Spirea:
+Double play candy corn
+Pineapple poprocks
+Double play big bang
+Goldmound
+
+Thunderbolt box honeysuckle
+
+Quince:
+Double take eternal white
+Double take scarlet
+
+Bloomerang dark purple reblooming lilac
+
+Ninebark:
+Tiny wine
+Ginger wine
+
+Deutzia:
+Yuki cherry blossom
+Yuki kabuki
+
+Diervilla:
+Kodiak Orange
+Kodiak black
+
+Unforgettable fire dwarf burning bush
+
+Weigela:
+Shining sensation
+Czechmark trilorgy
+Sonic bloom red
+
+Berberis:
+Orange rocket
+Golden rocket
+Crimson pygmy
+
+Roses:
+Coral drift
+Peach drift
+Pink drift
+Red drift
+Double knock out
+Pink double knock out
+
+Holly:
+Soft touch
+Gem box
+Strongbox
+Hoogendorn
+Dwarf nigra
+Sky box
+Carissa
+Steeds
+Compacta
+Sky pencil
+Nellie r Steven’s
+Nellie Steven’s? Not sure if r Steven’s and Steven’s are different
+Robin
+Carolina sentinel
+Crown point purple
+Oakland
+Christmas jewel
+Shamrock
+
+Show off sugar baby forsythia
+Lemony lace elderberry
+Peach drift roses
+Red drift roses
+Pink drift roses
+Double knock out roses
+Annabelle hydrangea
+Let’s dance sky view hydrangea
+Double play candy corn spirea
+Pineapple poprocks spirea
+Goldmound spirea
+Double play big bang spirea
+Purple pixie loropetalum
+Syringa patula ‘miss Kim’
+Yellow lady banks rose
+Windmill palm
+Hardy gardenia azaleas
+Delaware valley azalea
+Florida sunshine anise
+Bananappeal anise
+Mr bowling ball arborvitae
+Perfecto Mundo white azaleas
+Steeds Holly
+Compacta Holly
+Dwarf yaupon Holly
+Schillings dwarf yaupon Holly
+Green velvet boxwood
+
+Herbs:
+Otto quast spanish lavender
+Anouk purple medley spanish lavender
+Anouk supreme spanish lavender
+Primavera lavender
+Trailing rosemary
+Tuscan blue rosemary
+Barbecue rosemary
+Rosemary prostratus
+Salem rosemary
+Javelin forte white spanish lavender
+Super blue English lavender
+Phenomenal lavender
+Provence lavender
+Platinum blonde lavender
+Fernleaf dill
+Smokey bronze fennel
+Prospera Italian large leaf basil
+Red Rubin basil
+Golden sage
+Tricolor sage
+African blue basil
+Scented geranium (pelargonium species)
+Purple sage
+English thyme
+Cilantro
+Lovage
+Red veined dock
+Pineapple mint
+Chocolate mint
+Strawberry mint
+Mojito mint
+Peppermint
+Kentucky colonel spearmint
+Italian parsley
+Curled parsley
+
+Fruit:
+Arbequina olive
+Silver dollar blueberry
+Pink icing blueberry
+Sunshine blue blueberry
+Rabbiteye blueberry
+
+Trees:
+Yoshino cryptomeria
+Carolina sapphire cypress
+Little gem magnolia
+Teddy bear magnolia
+Fragrant fountain Japanese snowbell
+Nightfall styrax japonicus
+Snowcone Japanese snowbell
+Evening light Japanese snowbell
+Marley’s pink parasol Japanese snowbell
+Fragrant snowbell
+Debonair bald cypress
+Judy zuk magnolia
+Krauter Vesuvius prunus cerasifera
+Ann magnolia
+Royal purple smoketree
+Multistem Virginiana moonglow magnolia
+Autumn gold ginkgo
+Mariken ginkgo
+Jane magnolia
+Forest pansy redbud
+Chinese pistache
+Merlot redbud
+Hearts of gold redbud
+Eastern redbud
+Ruby falls weeping redbud
+Golden falls redbud
+Zigzag redbud
+Hearts a fire redbud
+Appalachian redbud
+Green machine redbud
+Carolina sweetheart redbud

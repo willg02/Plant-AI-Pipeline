@@ -51,6 +51,182 @@
             border-radius: 12px;
             font-size: 13px;
         }
+        #add-plants-btn-header {
+            margin-left: 10px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        #add-plants-btn-header:hover { background: rgba(255,255,255,0.35); }
+
+        /* ── Add Plants Panel ───────────────── */
+        #panel-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 100;
+            animation: fadeIn 0.2s ease;
+        }
+        #add-panel {
+            position: fixed;
+            top: 0; right: -480px;
+            width: 460px; height: 100vh;
+            background: var(--surface);
+            box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        #add-panel.open { right: 0; }
+        .panel-header {
+            background: var(--primary);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .panel-header h2 { font-size: 17px; font-weight: 600; }
+        .panel-close {
+            background: none; border: none; color: white;
+            font-size: 20px; cursor: pointer; opacity: 0.8;
+            line-height: 1; padding: 0 4px;
+        }
+        .panel-close:hover { opacity: 1; }
+        .panel-body {
+            flex: 1; overflow-y: auto;
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .panel-instructions {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .format-example {
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+        }
+        .format-example strong { display: block; margin-bottom: 6px; color: var(--text); }
+        .format-example pre {
+            margin: 0; color: var(--primary);
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        #plants-paste {
+            width: 100%;
+            min-height: 180px;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #plants-paste:focus { border-color: var(--primary-l); }
+        #parse-preview {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            min-height: 18px;
+        }
+        #start-enrich-btn {
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #start-enrich-btn:hover { background: var(--primary-l); }
+        #start-enrich-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── Progress log ───────────────────── */
+        #progress-section { display: none; flex-direction: column; gap: 10px; }
+        #progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; font-weight: 600; color: var(--text);
+        }
+        #progress-counter { color: var(--text-muted); }
+        #progress-bar-wrap {
+            background: var(--border);
+            border-radius: 6px; height: 6px; overflow: hidden;
+        }
+        #progress-bar {
+            height: 100%; width: 0%;
+            background: var(--primary-l);
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+        #progress-log {
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex; flex-direction: column; gap: 4px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            background: #fafafa;
+        }
+        .log-item {
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            display: flex; align-items: baseline; gap: 6px;
+        }
+        .log-item.added    { background: #d8f3dc; color: #1b4332; }
+        .log-item.skipped  { background: #fff3cd; color: #856404; }
+        .log-item.error    { background: #f8d7da; color: #721c24; }
+        .log-item .reason  { font-size: 11px; opacity: 0.75; }
+
+        /* ── Done summary ───────────────────── */
+        #done-section { display: none; flex-direction: column; gap: 12px; }
+        .done-card {
+            border-radius: 10px;
+            padding: 16px;
+            background: var(--user-bg);
+            border: 1px solid var(--accent);
+        }
+        .done-card h3 { font-size: 16px; margin-bottom: 10px; color: var(--primary); }
+        .done-stats {
+            display: flex; gap: 16px; flex-wrap: wrap;
+        }
+        .done-stat {
+            display: flex; flex-direction: column; align-items: center;
+            min-width: 60px;
+        }
+        .done-stat .num { font-size: 24px; font-weight: 700; color: var(--primary); }
+        .done-stat .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+        .done-actions { display: flex; gap: 10px; }
+        .done-actions button {
+            flex: 1; padding: 10px;
+            border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        #done-add-more {
+            background: var(--primary); color: white; border: none;
+        }
+        #done-add-more:hover { background: var(--primary-l); }
+        #done-close {
+            background: white; color: var(--text); border: 1px solid var(--border);
+        }
+        #done-close:hover { background: var(--bg); }
 
         /* ── Chat Area ──────────────────────── */
         #chat-area {
@@ -183,7 +359,62 @@
             <div class="subtitle">Ask me anything about our plant selection</div>
         </div>
         <div id="plant-count">Loading...</div>
+        <button id="add-plants-btn-header" onclick="openAddPanel()">+ Add Plants</button>
     </header>
+
+    <!-- ── Add Plants Slide Panel ───────────────────────────── -->
+    <div id="panel-overlay" onclick="closeAddPanel()"></div>
+    <div id="add-panel">
+        <div class="panel-header">
+            <h2>🌱 Add Plants to Database</h2>
+            <button class="panel-close" onclick="closeAddPanel()">✕</button>
+        </div>
+        <div class="panel-body">
+            <!-- Idle / input state -->
+            <div id="idle-section">
+                <p class="panel-instructions">
+                    Paste plant names below — one per line. Use <strong>Category:</strong> headers to group cultivars (same format as the input file).
+                </p>
+                <div class="format-example">
+                    <strong>Example format:</strong>
+                    <pre>Hydrangea:
+Limelight Prime
+Bobo
+
+Camellia japonica
+Knockout Rose</pre>
+                </div>
+                <textarea id="plants-paste"
+                    placeholder="Paste your plant names here..."></textarea>
+                <div id="parse-preview"></div>
+                <button id="start-enrich-btn" onclick="startAddPlants()">
+                    Enrich &amp; Add to Database
+                </button>
+            </div>
+
+            <!-- Progress state -->
+            <div id="progress-section">
+                <div id="progress-header">
+                    <span id="progress-title">Processing...</span>
+                    <span id="progress-counter"></span>
+                </div>
+                <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+                <div id="progress-log"></div>
+            </div>
+
+            <!-- Done state -->
+            <div id="done-section">
+                <div class="done-card">
+                    <h3>All done!</h3>
+                    <div class="done-stats" id="done-stats"></div>
+                </div>
+                <div class="done-actions">
+                    <button id="done-add-more" onclick="resetAddPanel()">Add More Plants</button>
+                    <button id="done-close" onclick="closeAddPanel()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="chat-area">
         <div class="message system">
@@ -294,6 +525,140 @@
 
             sendBtn.disabled = false;
             questionEl.focus();
+        }
+
+        // ── Add Plants Panel ─────────────────────────────────────────
+        const addPanel    = document.getElementById('add-panel');
+        const overlay     = document.getElementById('panel-overlay');
+        const pasteEl     = document.getElementById('plants-paste');
+        const previewEl   = document.getElementById('parse-preview');
+        const enrichBtn   = document.getElementById('start-enrich-btn');
+
+        function openAddPanel() {
+            overlay.style.display = 'block';
+            addPanel.classList.add('open');
+            pasteEl.focus();
+        }
+        function closeAddPanel() {
+            overlay.style.display = 'none';
+            addPanel.classList.remove('open');
+        }
+        function showSection(name) {
+            ['idle-section','progress-section','done-section'].forEach(id => {
+                document.getElementById(id).style.display = id === name + '-section' ? 'flex' : 'none';
+            });
+        }
+        function resetAddPanel() {
+            pasteEl.value = '';
+            previewEl.textContent = '';
+            document.getElementById('progress-log').innerHTML = '';
+            document.getElementById('progress-bar').style.width = '0%';
+            showSection('idle');
+        }
+
+        // Live preview as user types
+        let previewTimer;
+        pasteEl.addEventListener('input', () => {
+            clearTimeout(previewTimer);
+            previewTimer = setTimeout(async () => {
+                const text = pasteEl.value.trim();
+                if (!text) { previewEl.textContent = ''; return; }
+                try {
+                    const res = await fetch('/api/preview-plants', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({text})
+                    });
+                    const d = await res.json();
+                    previewEl.textContent = d.count > 0
+                        ? `${d.count} plant name${d.count !== 1 ? 's' : ''} detected`
+                        : 'No plant names detected';
+                } catch { previewEl.textContent = ''; }
+            }, 400);
+        });
+
+        async function startAddPlants() {
+            const text = pasteEl.value.trim();
+            if (!text) return;
+
+            enrichBtn.disabled = true;
+            showSection('progress');
+            document.getElementById('progress-log').innerHTML = '';
+            document.getElementById('progress-bar').style.width = '0%';
+
+            let total = 0;
+            try {
+                const res = await fetch('/api/add-plants', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text})
+                });
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const {done, value} = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, {stream: true});
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // keep incomplete line
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        try { handleAddEvent(JSON.parse(line.slice(6))); }
+                        catch { /* ignore parse errors */ }
+                    }
+                }
+            } catch (err) {
+                appendLogItem('error', 'Connection error', err.message);
+            }
+            enrichBtn.disabled = false;
+        }
+
+        function handleAddEvent(ev) {
+            switch (ev.type) {
+                case 'start':
+                    document.getElementById('progress-title').textContent =
+                        `Enriching ${ev.total} plant${ev.total !== 1 ? 's' : ''}...`;
+                    document.getElementById('progress-counter').textContent = `0 / ${ev.total}`;
+                    break;
+
+                case 'progress': {
+                    const pct = Math.round((ev.index / ev.total) * 100);
+                    document.getElementById('progress-bar').style.width = pct + '%';
+                    document.getElementById('progress-counter').textContent = `${ev.index} / ${ev.total}`;
+                    appendLogItem(ev.status, ev.name, ev.reason || '');
+                    break;
+                }
+                case 'done':
+                    showSection('done');
+                    document.getElementById('done-stats').innerHTML = `
+                        <div class="done-stat"><div class="num">${ev.added}</div><div class="lbl">Added</div></div>
+                        <div class="done-stat"><div class="num">${ev.skipped}</div><div class="lbl">Skipped</div></div>
+                        <div class="done-stat"><div class="num">${ev.errors}</div><div class="lbl">Errors</div></div>
+                        <div class="done-stat"><div class="num">${ev.total}</div><div class="lbl">Total</div></div>`;
+                    // Refresh plant count in header
+                    fetch('/api/status').then(r => r.json()).then(d => {
+                        document.getElementById('plant-count').textContent =
+                            `${d.plant_count} plant${d.plant_count !== 1 ? 's' : ''} in database`;
+                    });
+                    break;
+
+                case 'error':
+                    appendLogItem('error', 'Error', ev.message);
+                    break;
+            }
+        }
+
+        function appendLogItem(status, name, reason) {
+            const icons = {added: '✅', skipped: '⏭️', error: '❌'};
+            const log = document.getElementById('progress-log');
+            const div = document.createElement('div');
+            div.className = `log-item ${status}`;
+            div.innerHTML = `<span>${icons[status] || '•'}</span> <strong>${name}</strong>`
+                + (reason ? ` <span class="reason">(${reason})</span>` : '');
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
         }
     </script>
 </body>

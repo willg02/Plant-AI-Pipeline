@@ -22,6 +22,7 @@ app = FastAPI(title="Plant AI Advisor", version="1.0.0")
 # ── Request / Response models ─────────────────────────────────────────────
 class QuestionRequest(BaseModel):
     question: str
+    history: list[dict] = []
 
 
 class AnswerResponse(BaseModel):
@@ -51,7 +52,7 @@ def ask_question(req: QuestionRequest, db: Session = Depends(get_db)):
     """Main endpoint — takes a natural language question, returns an AI answer
     grounded in the local plant database."""
     engine = QueryEngine(db)
-    result = engine.ask(req.question)
+    result = engine.ask(req.question, req.history)
     return AnswerResponse(**result)
 
 

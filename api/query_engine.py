@@ -64,18 +64,19 @@ User: "What plants bloom in spring and can handle shade?"
 {"sql": "SELECT * FROM plants WHERE blooms = 1 AND bloom_season LIKE '%spring%' AND (sun_exposure LIKE '%shade%')", "explanation": "Looking for spring-blooming plants that tolerate shade"}"""
 
 
-ANSWER_PROMPT = """You are a friendly, knowledgeable plant advisor for a local plant supplier.
-Using ONLY the plant data provided below, answer the user's question in a conversational, helpful way.
+ANSWER_SYSTEM = """You are a friendly, knowledgeable plant advisor for a local plant supplier.
+You have memory of the conversation so far and can answer follow-up questions naturally.
 
 RULES:
-- ONLY mention plants that appear in the data below. NEVER make up or suggest plants not in this list.
-- If no plants match, say something like "We don't currently carry anything that matches that exactly, but here's the closest we have..." and suggest the nearest matches from the data.
+- ONLY mention plants that appear in the PLANT DATA provided. NEVER make up or suggest plants not in that data.
+- If no plants match, say something like "We don't currently carry anything that matches that exactly, but here's the closest we have..." and suggest nearest matches.
 - Include relevant details (size, sun, bloom color, etc.) that relate to the question.
 - Keep it concise but informative — like a knowledgeable nursery worker would talk.
 - If there are many matches, highlight the top 3-5 best fits and mention how many total matched.
 - Format plant names in bold.
+- For follow-up questions ("which of those is smallest?", "any of those deer resistant?"), refer back to plants mentioned in your previous answers."""
 
-PLANT DATA:
+ANSWER_USER_TEMPLATE = """PLANT DATA FOR THIS QUERY:
 {plant_data}
 
 USER QUESTION: {question}"""
@@ -88,21 +89,24 @@ class QueryEngine:
         self.db = db
         self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-    def ask(self, question: str) -> dict:
+    def ask(self, question: str, history: list[dict] | None = None) -> dict:
         """
         Full pipeline: question → SQL → results → natural language answer.
+        history is a list of {role, content} dicts from previous turns.
         Returns dict with keys: answer, sql, result_count
         """
-        # Step 1: Generate SQL from the question
-        sql_response = self._generate_sql(question)
+        history = history or []
+
+        # Step 1: Generate SQL (pass history so follow-ups resolve correctly)
+        sql_response = self._generate_sql(question, history)
         sql_query = sql_response.get("sql", "")
         explanation = sql_response.get("explanation", "")
 
         # Step 2: Execute the SQL
         results = self._execute_query(sql_query)
 
-        # Step 3: Generate a natural language answer from the results
-        answer = self._generate_answer(question, results)
+        # Step 3: Generate a natural language answer with full conversation history
+        answer = self._generate_answer(question, results, history)
 
         return {
             "answer": answer,
@@ -111,13 +115,24 @@ class QueryEngine:
             "result_count": len(results),
         }
 
-    def _generate_sql(self, question: str) -> dict:
-        """Ask Claude to translate the question into SQL."""
+    def _generate_sql(self, question: str, history: list[dict]) -> dict:
+        """Ask Claude to translate the question into SQL, with history for follow-ups."""
+        # Build messages: prior turns (user questions only, no plant data blobs) + current question
+        messages = []
+        for turn in history:
+            # Only include question turns to keep the SQL prompt lean
+            if turn["role"] == "user":
+                messages.append({"role": "user", "content": turn["content"]})
+            else:
+                # Placeholder so Claude understands the turn was answered
+                messages.append({"role": "assistant", "content": "(answered)"})
+        messages.append({"role": "user", "content": question})
+
         response = self.client.messages.create(
             model=CLAUDE_MODEL,
             max_tokens=512,
             system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": question}],
+            messages=messages,
         )
         raw = response.content[0].text.strip()
 
@@ -157,23 +172,22 @@ class QueryEngine:
             except Exception:
                 return []
 
-    def _generate_answer(self, question: str, results: list[dict]) -> str:
-        """Ask Claude to craft a conversational answer from the query results."""
-        if not results:
-            plant_data = "No plants matched the query."
-        else:
-            # Format results for the prompt
-            plant_data = json.dumps(results, indent=2, default=str)
+    def _generate_answer(self, question: str, results: list[dict], history: list[dict]) -> str:
+        """Ask Claude to craft a conversational answer, with full conversation history."""
+        plant_data = "No plants matched the query." if not results else json.dumps(results, indent=2, default=str)
+
+        # Replay prior turns then append the current user message with plant data
+        messages = list(history)  # copy
+        messages.append({
+            "role": "user",
+            "content": ANSWER_USER_TEMPLATE.format(plant_data=plant_data, question=question),
+        })
 
         response = self.client.messages.create(
             model=CLAUDE_MODEL,
             max_tokens=1024,
-            messages=[
-                {
-                    "role": "user",
-                    "content": ANSWER_PROMPT.format(plant_data=plant_data, question=question),
-                }
-            ],
+            system=ANSWER_SYSTEM,
+            messages=messages,
         )
         return response.content[0].text.strip()
 

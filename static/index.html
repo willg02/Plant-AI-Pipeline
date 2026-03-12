@@ -327,6 +327,42 @@
         #input-bar button:hover { background: var(--primary-l); }
         #input-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* ── Memory indicator ───────────────── */
+        #memory-bar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 24px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        #memory-bar .mem-label { white-space: nowrap; }
+        #memory-dots { display: flex; gap: 4px; align-items: center; }
+        .mem-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: white;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .mem-dot.filled { background: var(--primary-l); border-color: var(--primary-l); }
+        .mem-dot.warn   { background: #ffc107; border-color: #ffc107; }
+        .mem-dot.full   { background: #dc3545; border-color: #dc3545; }
+        #memory-reset {
+            margin-left: auto;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2px 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        #memory-reset:hover { background: var(--bg); color: var(--text); }
+
         /* ── Suggested Prompts ──────────────── */
         #suggestions {
             display: flex;
@@ -430,6 +466,13 @@ Knockout Rose</pre>
         <div class="suggestion" onclick="useSuggestion(this)">Deer-resistant plants?</div>
     </div>
 
+    <div id="memory-bar">
+        <span class="mem-label">Context memory:</span>
+        <div id="memory-dots"></div>
+        <span id="memory-hint"></span>
+        <button id="memory-reset" onclick="resetMemory()" title="Start a fresh conversation">New chat</button>
+    </div>
+
     <div id="input-bar">
         <input type="text" id="question" placeholder="Ask about our plants..." 
                onkeydown="if(event.key==='Enter')sendQuestion()">
@@ -441,6 +484,9 @@ Knockout Rose</pre>
         const questionEl = document.getElementById('question');
         const sendBtn    = document.getElementById('send-btn');
         const suggestions = document.getElementById('suggestions');
+
+        // Conversation history sent to the backend with each request
+        let conversationHistory = [];
 
         // Load plant count on startup
         fetch('/api/status')
@@ -502,7 +548,7 @@ Knockout Rose</pre>
                 const res = await fetch('/api/ask', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question }),
+                    body: JSON.stringify({ question, history: conversationHistory }),
                 });
 
                 hideTyping();
@@ -517,6 +563,13 @@ Knockout Rose</pre>
                 meta.className = 'meta';
                 meta.textContent = `${data.result_count} plant${data.result_count !== 1 ? 's' : ''} matched`;
                 msg.appendChild(meta);
+
+                // Append this exchange to history for follow-up context
+                conversationHistory.push({ role: 'user', content: question });
+                conversationHistory.push({ role: 'assistant', content: data.answer });
+                // Keep last 10 turns (5 exchanges) to avoid runaway token usage
+                if (conversationHistory.length > 10) conversationHistory = conversationHistory.slice(-10);
+                updateMemoryBar();
 
             } catch (err) {
                 hideTyping();
@@ -659,6 +712,52 @@ Knockout Rose</pre>
                 + (reason ? ` <span class="reason">(${reason})</span>` : '');
             log.appendChild(div);
             log.scrollTop = log.scrollHeight;
+        }
+
+        // ── Memory indicator ─────────────────────────────────────────
+        const MAX_EXCHANGES = 5;
+
+        function updateMemoryBar() {
+            const bar = document.getElementById('memory-bar');
+            const dotsEl = document.getElementById('memory-dots');
+            const hintEl = document.getElementById('memory-hint');
+            const exchanges = Math.floor(conversationHistory.length / 2);
+
+            bar.style.display = 'flex';
+            dotsEl.innerHTML = '';
+
+            for (let i = 0; i < MAX_EXCHANGES; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'mem-dot';
+                if (i < exchanges) {
+                    dot.classList.add(exchanges === MAX_EXCHANGES ? 'full' : exchanges >= MAX_EXCHANGES - 1 ? 'warn' : 'filled');
+                }
+                dotsEl.appendChild(dot);
+            }
+
+            if (exchanges === 0) {
+                hintEl.textContent = '';
+            } else if (exchanges < MAX_EXCHANGES - 1) {
+                hintEl.textContent = `${exchanges} of ${MAX_EXCHANGES} exchanges remembered`;
+            } else if (exchanges === MAX_EXCHANGES - 1) {
+                hintEl.textContent = `1 exchange left — oldest will drop off soon`;
+            } else {
+                hintEl.textContent = `Full — oldest exchanges are no longer remembered`;
+            }
+        }
+
+        function resetMemory() {
+            conversationHistory = [];
+            document.getElementById('memory-bar').style.display = 'none';
+            document.getElementById('memory-dots').innerHTML = '';
+            document.getElementById('memory-hint').textContent = '';
+            // Add a visual divider in chat
+            const div = document.createElement('div');
+            div.className = 'message system';
+            div.textContent = '— New conversation started —';
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            questionEl.focus();
         }
     </script>
 </body>

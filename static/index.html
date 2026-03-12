@@ -228,6 +228,192 @@
         }
         #done-close:hover { background: var(--bg); }
 
+        /* ── Browse Catalog Panel ──────────────────────────── */
+        #browse-panel {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        #browse-panel.open { transform: translateX(0); }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .browse-header {
+            background: var(--primary);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow);
+        }
+        .browse-header h2 { font-size: 18px; font-weight: 600; flex: 1; }
+        #browse-result-count {
+            font-size: 13px; opacity: 0.85;
+            background: rgba(255,255,255,0.15);
+            padding: 3px 10px; border-radius: 10px;
+            white-space: nowrap;
+        }
+        .browse-close {
+            background: none; border: none; color: white;
+            font-size: 22px; cursor: pointer; opacity: 0.8;
+            line-height: 1; padding: 0 4px;
+        }
+        .browse-close:hover { opacity: 1; }
+        .browse-body { flex: 1; display: flex; overflow: hidden; }
+        .browse-sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
+        .filter-label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; color: var(--text-muted);
+        }
+        .filter-input, .filter-select {
+            width: 100%; padding: 7px 10px;
+            border: 1px solid var(--border); border-radius: 8px;
+            font-size: 13px; font-family: inherit;
+            background: var(--bg); outline: none;
+        }
+        .filter-input:focus, .filter-select:focus { border-color: var(--primary-l); }
+        .filter-select { cursor: pointer; }
+        .toggle-group { display: flex; flex-direction: column; gap: 6px; }
+        .toggle-row {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; cursor: pointer; user-select: none;
+        }
+        .toggle-row input[type="checkbox"] { accent-color: var(--primary); cursor: pointer; }
+        .browse-reset-btn {
+            padding: 8px; background: var(--bg); color: var(--text);
+            border: 1px solid var(--border); border-radius: 8px;
+            font-size: 13px; cursor: pointer; transition: all 0.2s;
+            margin-top: auto;
+        }
+        .browse-reset-btn:hover { background: var(--border); }
+        .browse-main { flex: 1; overflow-y: auto; padding: 20px; }
+        .browse-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+        .browse-empty {
+            text-align: center; color: var(--text-muted);
+            font-size: 15px; margin-top: 60px; grid-column: 1 / -1;
+        }
+        .plant-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+            display: flex; flex-direction: column; gap: 7px;
+        }
+        .plant-card:hover {
+            border-color: var(--primary-l);
+            box-shadow: 0 4px 16px rgba(45,106,79,0.14);
+            transform: translateY(-2px);
+        }
+        .plant-card-name { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
+        .plant-card-sci  { font-size: 12px; color: var(--text-muted); font-style: italic; }
+        .plant-card-badges { display: flex; flex-wrap: wrap; gap: 4px; }
+        .badge {
+            font-size: 11px; font-weight: 600;
+            padding: 2px 7px; border-radius: 9px; white-space: nowrap;
+        }
+        .badge-type      { background: #e8f4ec; color: #1b5e3a; }
+        .badge-sun-full  { background: #fff9c4; color: #6d5c00; }
+        .badge-sun-part  { background: #e8f5e9; color: #2e7d32; }
+        .badge-sun-shade { background: #e3f2fd; color: #1565c0; }
+        .badge-sun-any   { background: #f0f0f0; color: #555; }
+        .badge-blooms    { background: #fce4ec; color: #880e4f; }
+        .badge-ever      { background: #e8f5e9; color: #1b5e20; }
+        .badge-deer      { background: #fff3e0; color: #bf360c; }
+        .badge-drought   { background: #f3e5f5; color: #6a1b9a; }
+        .plant-card-size { font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; }
+        /* ── Browse header button ───────────────────────── */
+        #browse-btn-header {
+            margin-left: 6px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        #browse-btn-header:hover { background: rgba(255,255,255,0.35); }
+        /* ── Plant Detail Modal ─────────────────────────── */
+        #detail-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 300;
+            justify-content: center; align-items: flex-start;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+        #detail-overlay.open { display: flex; }
+        #detail-modal {
+            background: var(--surface);
+            border-radius: 16px;
+            width: 100%; max-width: 680px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.25s ease;
+            flex-shrink: 0;
+        }
+        .detail-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 24px;
+            display: flex; align-items: flex-start; gap: 16px;
+        }
+        .detail-header-text { flex: 1; }
+        .detail-common-name { font-size: 20px; font-weight: 700; line-height: 1.3; }
+        .detail-sci-name { font-size: 14px; opacity: 0.8; font-style: italic; margin-top: 4px; }
+        .detail-close {
+            background: none; border: none; color: white;
+            font-size: 24px; cursor: pointer; opacity: 0.8; line-height: 1; flex-shrink: 0;
+        }
+        .detail-close:hover { opacity: 1; }
+        .detail-body { padding: 24px; }
+        .detail-section { margin-bottom: 20px; }
+        .detail-section-title {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.07em; color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px; margin-bottom: 12px;
+        }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .detail-field { display: flex; flex-direction: column; gap: 2px; }
+        .detail-field-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .detail-field-value { font-size: 14px; color: var(--text); font-weight: 500; }
+        .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+        .detail-description {
+            font-size: 14px; line-height: 1.6; color: var(--text);
+            background: var(--bg); padding: 12px 14px; border-radius: 8px;
+        }
+
         /* ── Chat Area ──────────────────────── */
         #chat-area {
             flex: 1;
@@ -395,6 +581,7 @@
             <div class="subtitle">Ask me anything about our plant selection</div>
         </div>
         <div id="plant-count">Loading...</div>
+        <button id="browse-btn-header" onclick="openBrowsePanel()">📋 Browse</button>
         <button id="add-plants-btn-header" onclick="openAddPanel()">+ Add Plants</button>
     </header>
 
@@ -449,6 +636,97 @@ Knockout Rose</pre>
                     <button id="done-close" onclick="closeAddPanel()">Close</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ── Browse Catalog Panel ─────────────────────────────────── -->
+    <div id="browse-panel">
+        <div class="browse-header">
+            <h2>🌿 Browse Plant Catalog</h2>
+            <span id="browse-result-count">– plants</span>
+            <button class="browse-close" onclick="closeBrowsePanel()">✕</button>
+        </div>
+        <div class="browse-body">
+            <div class="browse-sidebar">
+                <div class="filter-group">
+                    <div class="filter-label">Search</div>
+                    <input class="filter-input" id="f-search" placeholder="Name or keyword…"
+                           oninput="scheduleFilter()" />
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Plant Type</div>
+                    <select class="filter-select" id="f-type" onchange="applyFilters()">
+                        <option value="">All types</option>
+                        <option>Shrub</option>
+                        <option>Tree</option>
+                        <option>Perennial</option>
+                        <option>Annual</option>
+                        <option>Grass</option>
+                        <option>Vine</option>
+                        <option>Groundcover</option>
+                        <option>Fern</option>
+                        <option>Bulb</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Sun Exposure</div>
+                    <select class="filter-select" id="f-sun" onchange="applyFilters()">
+                        <option value="">Any</option>
+                        <option value="Full Sun">Full Sun</option>
+                        <option value="Part">Part Shade / Part Sun</option>
+                        <option value="Shade">Full Shade</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Water Needs</div>
+                    <select class="filter-select" id="f-water" onchange="applyFilters()">
+                        <option value="">Any</option>
+                        <option value="Low">Low</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Max Height (ft)</div>
+                    <input class="filter-input" id="f-maxh" type="number" min="0" step="1"
+                           placeholder="e.g. 4" oninput="scheduleFilter()" />
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Traits</div>
+                    <div class="toggle-group">
+                        <label class="toggle-row">
+                            <input type="checkbox" id="f-blooms" onchange="applyFilters()"> Blooms
+                        </label>
+                        <label class="toggle-row">
+                            <input type="checkbox" id="f-ever" onchange="applyFilters()"> Evergreen
+                        </label>
+                        <label class="toggle-row">
+                            <input type="checkbox" id="f-deer" onchange="applyFilters()"> Deer Resistant
+                        </label>
+                        <label class="toggle-row">
+                            <input type="checkbox" id="f-drought" onchange="applyFilters()"> Drought Tolerant
+                        </label>
+                    </div>
+                </div>
+                <button class="browse-reset-btn" onclick="resetFilters()">Clear Filters</button>
+            </div>
+            <div class="browse-main">
+                <div id="browse-grid" class="browse-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Plant Detail Modal ───────────────────────────────────── -->
+    <div id="detail-overlay" onclick="closeDetailOnOverlay(event)">
+        <div id="detail-modal">
+            <div class="detail-header">
+                <div class="detail-header-text">
+                    <div class="detail-common-name" id="d-common-name">–</div>
+                    <div class="detail-sci-name" id="d-sci-name"></div>
+                </div>
+                <button class="detail-close" onclick="closePlantDetail()">✕</button>
+            </div>
+            <div class="detail-body" id="detail-body"></div>
         </div>
     </div>
 
@@ -758,6 +1036,198 @@ Knockout Rose</pre>
             chatArea.appendChild(div);
             chatArea.scrollTop = chatArea.scrollHeight;
             questionEl.focus();
+        }
+
+        // ── Browse Catalog ───────────────────────────────────────────
+        let filterTimer;
+
+        function openBrowsePanel() {
+            document.getElementById('browse-panel').classList.add('open');
+            applyFilters();
+        }
+        function closeBrowsePanel() {
+            document.getElementById('browse-panel').classList.remove('open');
+        }
+        function scheduleFilter() {
+            clearTimeout(filterTimer);
+            filterTimer = setTimeout(applyFilters, 350);
+        }
+        function resetFilters() {
+            document.getElementById('f-search').value    = '';
+            document.getElementById('f-type').value      = '';
+            document.getElementById('f-sun').value       = '';
+            document.getElementById('f-water').value     = '';
+            document.getElementById('f-maxh').value      = '';
+            document.getElementById('f-blooms').checked  = false;
+            document.getElementById('f-ever').checked    = false;
+            document.getElementById('f-deer').checked    = false;
+            document.getElementById('f-drought').checked = false;
+            applyFilters();
+        }
+        async function applyFilters() {
+            const params = new URLSearchParams();
+            const search = document.getElementById('f-search').value.trim();
+            const type   = document.getElementById('f-type').value;
+            const sun    = document.getElementById('f-sun').value;
+            const water  = document.getElementById('f-water').value;
+            const maxh   = document.getElementById('f-maxh').value;
+            if (search) params.set('search', search);
+            if (type)   params.set('plant_type', type);
+            if (sun)    params.set('sun_exposure', sun);
+            if (water)  params.set('water_needs', water);
+            if (maxh)   params.set('max_height', maxh);
+            if (document.getElementById('f-blooms').checked)   params.set('blooms', 'true');
+            if (document.getElementById('f-ever').checked)     params.set('evergreen', 'true');
+            if (document.getElementById('f-deer').checked)     params.set('deer_resistant', 'true');
+            if (document.getElementById('f-drought').checked)  params.set('drought_tolerant', 'true');
+            try {
+                const res  = await fetch('/api/plants/filter?' + params.toString());
+                const data = await res.json();
+                document.getElementById('browse-result-count').textContent =
+                    `${data.total} plant${data.total !== 1 ? 's' : ''}`;
+                renderPlantCards(data.plants);
+            } catch {
+                document.getElementById('browse-grid').innerHTML =
+                    '<div class="browse-empty">Error loading plants.</div>';
+            }
+        }
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+        function sunBadgeClass(sun) {
+            if (!sun) return 'badge-sun-any';
+            const s = sun.toLowerCase();
+            if (s.includes('full sun'))   return 'badge-sun-full';
+            if (s.includes('full shade')) return 'badge-sun-shade';
+            if (s.includes('part'))       return 'badge-sun-part';
+            if (s.includes('shade'))      return 'badge-sun-shade';
+            return 'badge-sun-any';
+        }
+        function renderPlantCards(plants) {
+            const grid = document.getElementById('browse-grid');
+            if (!plants.length) {
+                grid.innerHTML = '<div class="browse-empty">No plants match the current filters.</div>';
+                return;
+            }
+            grid.innerHTML = plants.map(p => {
+                const badges = [];
+                if (p.plant_type)       badges.push(`<span class="badge badge-type">${escHtml(p.plant_type)}</span>`);
+                if (p.sun_exposure)     badges.push(`<span class="badge ${sunBadgeClass(p.sun_exposure)}">${escHtml(p.sun_exposure)}</span>`);
+                if (p.blooms)           badges.push('<span class="badge badge-blooms">&#127800; Blooms</span>');
+                if (p.evergreen)        badges.push('<span class="badge badge-ever">Evergreen</span>');
+                if (p.deer_resistant)   badges.push('<span class="badge badge-deer">Deer Resistant</span>');
+                if (p.drought_tolerant) badges.push('<span class="badge badge-drought">Drought Tolerant</span>');
+                const h = [p.mature_height_min_ft, p.mature_height_max_ft].filter(v => v != null);
+                const w = [p.mature_width_min_ft,  p.mature_width_max_ft ].filter(v => v != null);
+                const sizeHtml = (h.length || w.length)
+                    ? `<div class="plant-card-size">${h.length ? '<span>H: ' + h.join('–') + ' ft</span>' : ''}${w.length ? '<span>W: ' + w.join('–') + ' ft</span>' : ''}</div>`
+                    : '';
+                return `<div class="plant-card" onclick="openPlantDetail(${p.id})">
+                    <div class="plant-card-name">${escHtml(p.common_name || '—')}</div>
+                    ${p.scientific_name ? `<div class="plant-card-sci">${escHtml(p.scientific_name)}</div>` : ''}
+                    <div class="plant-card-badges">${badges.join('')}</div>
+                    ${sizeHtml}
+                </div>`;
+            }).join('');
+        }
+
+        // ── Plant Detail ─────────────────────────────────────────────
+        async function openPlantDetail(id) {
+            try {
+                const res = await fetch(`/api/plants/${id}`);
+                if (!res.ok) return;
+                const p = await res.json();
+                populateDetail(p);
+                document.getElementById('detail-overlay').classList.add('open');
+            } catch { /* swallow */ }
+        }
+        function closePlantDetail() {
+            document.getElementById('detail-overlay').classList.remove('open');
+        }
+        function closeDetailOnOverlay(e) {
+            if (e.target === document.getElementById('detail-overlay')) closePlantDetail();
+        }
+        function fv(val) {
+            if (val === null || val === undefined || val === '')
+                return '<span style="color:var(--text-muted);font-style:italic">—</span>';
+            if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+            return escHtml(String(val));
+        }
+        function populateDetail(p) {
+            document.getElementById('d-common-name').textContent = p.common_name || 'Unknown Plant';
+            document.getElementById('d-sci-name').textContent    = p.scientific_name || '';
+            const badges = [];
+            if (p.plant_type)       badges.push(`<span class="badge badge-type">${escHtml(p.plant_type)}</span>`);
+            if (p.sun_exposure)     badges.push(`<span class="badge ${sunBadgeClass(p.sun_exposure)}">${escHtml(p.sun_exposure)}</span>`);
+            if (p.blooms)           badges.push('<span class="badge badge-blooms">&#127800; Blooms</span>');
+            if (p.evergreen)        badges.push('<span class="badge badge-ever">Evergreen</span>');
+            if (p.deer_resistant)   badges.push('<span class="badge badge-deer">Deer Resistant</span>');
+            if (p.drought_tolerant) badges.push('<span class="badge badge-drought">Drought Tolerant</span>');
+            const h = [p.mature_height_min_ft, p.mature_height_max_ft].filter(v => v != null);
+            const w = [p.mature_width_min_ft,  p.mature_width_max_ft ].filter(v => v != null);
+            const hZone = (p.hardiness_zone_min && p.hardiness_zone_max)
+                ? `${p.hardiness_zone_min}–${p.hardiness_zone_max}`
+                : (p.hardiness_zone_min || p.hardiness_zone_max || null);
+            document.getElementById('detail-body').innerHTML = `
+                ${badges.length ? `<div class="detail-section"><div class="detail-tags">${badges.join('')}</div></div>` : ''}
+                <div class="detail-section">
+                    <div class="detail-section-title">Size &amp; Growing Conditions</div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Height</div>
+                            <div class="detail-field-value">${h.length ? escHtml(h.join('–')) + ' ft' : fv(null)}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Width</div>
+                            <div class="detail-field-value">${w.length ? escHtml(w.join('–')) + ' ft' : fv(null)}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Sun Exposure</div>
+                            <div class="detail-field-value">${fv(p.sun_exposure)}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Water Needs</div>
+                            <div class="detail-field-value">${fv(p.water_needs)}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Growth Rate</div>
+                            <div class="detail-field-value">${fv(p.growth_rate)}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Hardiness Zones</div>
+                            <div class="detail-field-value">${fv(hZone)}</div>
+                        </div>
+                    </div>
+                </div>
+                ${p.blooms ? `
+                <div class="detail-section">
+                    <div class="detail-section-title">Bloom Information</div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Bloom Color</div>
+                            <div class="detail-field-value">${fv(p.bloom_color)}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Bloom Season</div>
+                            <div class="detail-field-value">${fv(p.bloom_season)}</div>
+                        </div>
+                    </div>
+                </div>` : ''}
+                ${p.landscape_use ? `
+                <div class="detail-section">
+                    <div class="detail-section-title">Landscape Use</div>
+                    <div class="detail-field-value">${fv(p.landscape_use)}</div>
+                </div>` : ''}
+                ${p.description ? `
+                <div class="detail-section">
+                    <div class="detail-section-title">Description</div>
+                    <div class="detail-description">${escHtml(p.description)}</div>
+                </div>` : ''}
+            `;
         }
     </script>
 </body>

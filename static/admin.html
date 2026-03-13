@@ -471,6 +471,23 @@
                     </div>
                 </div>
             </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">Plant Image</div>
+                <div class="edit-grid">
+                    <div class="edit-field full-width">
+                        <label>Image URL (from Wikipedia or custom)</label>
+                        <input type="text" id="f_image_url" value="${escAttr(p.image_url)}"
+                               placeholder="https://…  (leave blank if none)"
+                               oninput="previewAdminImage()" />
+                    </div>
+                    <div class="edit-field full-width" id="admin-img-preview-wrap" style="${p.image_url ? '' : 'display:none'}">
+                        <img id="admin-img-preview" src="${escAttr(p.image_url)}" alt="plant image"
+                             style="max-height:220px;max-width:340px;border-radius:10px;object-fit:cover;border:1px solid var(--border)"
+                             onerror="this.style.display='none'" />
+                    </div>
+                </div>
+            </div>
         `;
     }
 
@@ -523,7 +540,8 @@
         const fields = {};
         const textKeys = ['common_name','scientific_name','plant_type','sun_exposure',
                           'water_needs','growth_rate','bloom_color','bloom_season',
-                          'foliage_color','fall_color','landscape_use','native_region','description'];
+                          'foliage_color','fall_color','landscape_use','native_region',
+                          'description','image_url'];
         const numKeys  = ['mature_height_min_ft','mature_height_max_ft',
                           'mature_width_min_ft','mature_width_max_ft',
                           'hardiness_zone_min','hardiness_zone_max'];
@@ -578,6 +596,18 @@
         const ta = document.getElementById('ai-instructions');
         ta.value = (ta.value.trim() ? ta.value.trim() + '\n\n' : '') + content;
         ta.focus();
+    }
+    function previewAdminImage() {
+        const url = document.getElementById('f_image_url').value.trim();
+        const wrap = document.getElementById('admin-img-preview-wrap');
+        const img  = document.getElementById('admin-img-preview');
+        if (url) {
+            wrap.style.display = '';
+            img.style.display = '';
+            img.src = url;
+        } else {
+            wrap.style.display = 'none';
+        }
     }
 
     async function saveAiInstructions() {

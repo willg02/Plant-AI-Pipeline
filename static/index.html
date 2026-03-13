@@ -330,6 +330,16 @@
             box-shadow: 0 4px 16px rgba(45,106,79,0.14);
             transform: translateY(-2px);
         }
+        .plant-card-img {
+            width: 100%; height: 130px; object-fit: cover;
+            border-radius: 8px; display: block; background: var(--bg);
+        }
+        .plant-card-img-placeholder {
+            width: 100%; height: 130px; border-radius: 8px;
+            background: linear-gradient(135deg, #e8f4ec 0%, #d8f3dc 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; color: var(--accent);
+        }
         .plant-card-name { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
         .plant-card-sci  { font-size: 12px; color: var(--text-muted); font-style: italic; }
         .plant-card-badges { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -1093,11 +1103,14 @@ Knockout Rose</pre>
             }
         }
         function escHtml(str) {
-            return String(str)
+            return String(str ?? '')
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }
+        function escAttr(str) {
+            return String(str ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
         }
         function sunBadgeClass(sun) {
             if (!sun) return 'badge-sun-any';
@@ -1127,7 +1140,11 @@ Knockout Rose</pre>
                 const sizeHtml = (h.length || w.length)
                     ? `<div class="plant-card-size">${h.length ? '<span>H: ' + h.join('–') + ' ft</span>' : ''}${w.length ? '<span>W: ' + w.join('–') + ' ft</span>' : ''}</div>`
                     : '';
+                const imgHtml = p.image_url
+                    ? `<img class="plant-card-img" src="${escAttr(p.image_url)}" alt="${escAttr(p.common_name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="plant-card-img-placeholder" style="display:none">🌿</div>`
+                    : `<div class="plant-card-img-placeholder">🌿</div>`;
                 return `<div class="plant-card" onclick="openPlantDetail(${p.id})">
+                    ${imgHtml}
                     <div class="plant-card-name">${escHtml(p.common_name || '—')}</div>
                     ${p.scientific_name ? `<div class="plant-card-sci">${escHtml(p.scientific_name)}</div>` : ''}
                     <div class="plant-card-badges">${badges.join('')}</div>
@@ -1173,7 +1190,12 @@ Knockout Rose</pre>
             const hZone = (p.hardiness_zone_min && p.hardiness_zone_max)
                 ? `${p.hardiness_zone_min}–${p.hardiness_zone_max}`
                 : (p.hardiness_zone_min || p.hardiness_zone_max || null);
+            // Image at top of detail modal
+            const imgBlock = p.image_url
+                ? `<div style="margin-bottom:20px"><img src="${escAttr(p.image_url)}" alt="${escAttr(p.common_name || '')}" style="width:100%;max-height:280px;object-fit:cover;border-radius:10px;display:block" onerror="this.style.display='none'" /></div>`
+                : '';
             document.getElementById('detail-body').innerHTML = `
+                ${imgBlock}
                 ${badges.length ? `<div class="detail-section"><div class="detail-tags">${badges.join('')}</div></div>` : ''}
                 <div class="detail-section">
                     <div class="detail-section-title">Size &amp; Growing Conditions</div>

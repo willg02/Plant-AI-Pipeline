@@ -69,6 +69,7 @@ class Plant(Base):
     )
     native_region = Column(String(200), nullable=True)
     description = Column(Text, nullable=True, comment="Short narrative description")
+    image_url = Column(String(500), nullable=True, comment="URL to a representative plant photo")
 
     def to_dict(self) -> dict:
         """Return a plain dictionary of all columns for AI context."""

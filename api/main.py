@@ -86,11 +86,11 @@ def filter_plants(
     from sqlalchemy import or_
     q = db.query(Plant)
     if plant_type:
-        q = q.filter(Plant.plant_type == plant_type)
+        q = q.filter(Plant.plant_type.ilike(f"%{plant_type}%"))
     if sun_exposure:
-        q = q.filter(Plant.sun_exposure.like(f"%{sun_exposure}%"))
+        q = q.filter(Plant.sun_exposure.ilike(f"%{sun_exposure}%"))
     if water_needs:
-        q = q.filter(Plant.water_needs == water_needs)
+        q = q.filter(Plant.water_needs.ilike(f"%{water_needs}%"))
     if blooms is not None:
         q = q.filter(Plant.blooms == blooms)
     if evergreen is not None:

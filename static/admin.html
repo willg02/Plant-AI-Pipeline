@@ -223,6 +223,40 @@
         }
         .ai-example:hover { border-color: var(--primary-l); }
         .ai-example strong { color: var(--primary); display: block; margin-bottom: 3px; font-size: 12px; text-transform: uppercase; }
+
+        /* ── Mobile Responsive ────────────────── */
+        @media (max-width: 768px) {
+            header { padding: 10px 14px; gap: 10px; }
+            header .logo { font-size: 20px; }
+            header h1 { font-size: 15px; }
+            .login-card { width: 90vw; padding: 28px 20px; }
+
+            .tab-bar { padding: 0 10px; }
+            .tab { padding: 10px 14px; font-size: 13px; }
+
+            /* Plants tab: stack list above edit */
+            #tab-plants { flex-direction: column; }
+            .plant-list-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                max-height: 40vh;
+            }
+            .plant-edit-panel { padding: 16px; }
+            .edit-grid { grid-template-columns: 1fr; }
+            .edit-header { flex-direction: column; gap: 10px; }
+
+            /* AI tab */
+            #tab-ai { padding: 16px; gap: 14px; }
+            #tab-ai h2 { font-size: 16px; }
+        }
+
+        @media (max-width: 420px) {
+            header { flex-wrap: wrap; }
+            a.home-link { font-size: 11px; }
+            .tab { padding: 8px 10px; font-size: 12px; }
+            .plant-edit-panel { padding: 12px; }
+        }
     </style>
 </head>
 <body>

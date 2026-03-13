@@ -607,6 +607,120 @@
             background: var(--accent);
             color: white;
         }
+
+        /* ── Mobile Responsive ─────────────── */
+        @media (max-width: 768px) {
+            /* Header: stack title row, shrink buttons */
+            header {
+                padding: 12px 14px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            header .logo { font-size: 24px; }
+            header h1 { font-size: 16px; }
+            header .subtitle { font-size: 11px; }
+            #plant-count {
+                order: 10;
+                margin-left: 0;
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+            #browse-btn-header, #add-plants-btn-header {
+                padding: 5px 10px;
+                font-size: 12px;
+                margin-left: 0;
+            }
+
+            /* Chat area */
+            #chat-area { padding: 14px; gap: 12px; }
+            .message { max-width: 90%; padding: 10px 14px; font-size: 14px; }
+
+            /* Input bar */
+            #input-bar { padding: 10px 12px; gap: 8px; }
+            #input-bar input { padding: 10px 14px; font-size: 14px; }
+            #input-bar button { padding: 10px 16px; font-size: 14px; }
+
+            /* Suggestions */
+            #suggestions { padding: 0 12px 6px; gap: 6px; }
+            .suggestion { padding: 6px 10px; font-size: 12px; }
+
+            /* Memory bar */
+            #memory-bar { padding: 4px 12px; font-size: 11px; }
+            #memory-reset { font-size: 10px; padding: 2px 8px; }
+
+            /* Seasonal bar */
+            #seasonal-bar { padding: 8px 12px; gap: 8px; }
+            #seasonal-bar .season-label { font-size: 12px; }
+            .season-chip { font-size: 11px; padding: 2px 8px; }
+
+            /* Add Plants slide panel */
+            #add-panel { width: 100vw; right: -100vw; }
+
+            /* Browse panel */
+            .browse-header { padding: 12px 14px; gap: 10px; }
+            .browse-header h2 { font-size: 16px; }
+            .browse-body { flex-direction: column; }
+            .browse-sidebar {
+                width: 100%;
+                flex-shrink: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 12px;
+                max-height: none;
+                overflow-y: visible;
+                gap: 10px;
+            }
+            .browse-main { padding: 12px; }
+            .browse-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+            .plant-card { padding: 10px; }
+            .plant-card-name { font-size: 13px; }
+            .plant-card-sci { font-size: 11px; }
+            .badge { font-size: 10px; padding: 1px 5px; }
+
+            /* Detail modal */
+            #detail-overlay { padding: 0; align-items: stretch; }
+            #detail-modal {
+                max-width: 100%;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            .detail-header { padding: 16px; }
+            .detail-common-name { font-size: 18px; }
+            .detail-body { padding: 16px; }
+            .detail-grid { grid-template-columns: 1fr; gap: 10px; }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 420px) {
+            header { padding: 10px 10px; gap: 6px; }
+            header h1 { font-size: 15px; }
+            header .subtitle { display: none; }
+            #browse-btn-header, #add-plants-btn-header {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            .message { max-width: 94%; }
+            #input-bar input { min-width: 0; }
+            .browse-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Browse sidebar: collapsible on mobile */
+        @media (max-width: 768px) {
+            .browse-sidebar {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: flex-end;
+            }
+            .filter-group { flex: 1 1 45%; min-width: 140px; }
+            .toggle-group { flex: 1 1 100%; flex-direction: row; flex-wrap: wrap; gap: 8px; }
+            .browse-reset-btn { flex: 0 0 auto; margin-top: 0; }
+        }
     </style>
 </head>
 <body>

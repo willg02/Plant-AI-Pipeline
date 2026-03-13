@@ -413,6 +413,42 @@
             font-size: 14px; line-height: 1.6; color: var(--text);
             background: var(--bg); padding: 12px 14px; border-radius: 8px;
         }
+        /* ── Seasonal highlights strip ──────────── */
+        #seasonal-bar {
+            background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%);
+            border-bottom: 1px solid #95d5b2;
+            padding: 10px 20px;
+            display: flex; align-items: center; gap: 12px;
+            flex-shrink: 0; flex-wrap: wrap;
+            animation: fadeIn 0.4s ease;
+        }
+        #seasonal-bar .season-label {
+            font-size: 13px; font-weight: 700; color: var(--primary); white-space: nowrap;
+        }
+        #seasonal-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+        .season-chip {
+            background: white; border: 1px solid var(--accent);
+            color: var(--primary); font-size: 12px; font-weight: 600;
+            padding: 3px 10px; border-radius: 10px; cursor: pointer;
+            transition: all 0.15s; white-space: nowrap;
+        }
+        .season-chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        #seasonal-dismiss {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 18px; cursor: pointer; line-height: 1; flex-shrink: 0;
+            padding: 0 4px;
+        }
+        #seasonal-dismiss:hover { color: var(--text); }
+        /* ── Similar plants button ─────────────── */
+        .similar-btn {
+            display: block; width: 100%;
+            margin-top: 4px; padding: 12px;
+            background: var(--bg); color: var(--primary);
+            border: 2px solid var(--accent); border-radius: 10px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            text-align: center; transition: all 0.2s;
+        }
+        .similar-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* ── Chat Area ──────────────────────── */
         #chat-area {
@@ -737,6 +773,12 @@ Knockout Rose</pre>
         </div>
     </div>
 
+    <div id="seasonal-bar" style="display:none">
+        <span class="season-label" id="seasonal-label">🌸 Blooming this month:</span>
+        <div id="seasonal-chips"></div>
+        <button id="seasonal-dismiss" onclick="dismissSeasonal()" title="Dismiss">×</button>
+    </div>
+
     <div id="suggestions">
         <div class="suggestion" onclick="useSuggestion(this)">What blooms in spring?</div>
         <div class="suggestion" onclick="useSuggestion(this)">Show me drought-tolerant plants</div>
@@ -1039,6 +1081,65 @@ Knockout Rose</pre>
             questionEl.focus();
         }
 
+        // ── Seasonal Highlights ──────────────────────────────────
+        const SEASON_MONTHS = {
+            spring: [2,3,4],   // Mar Apr May
+            summer: [5,6,7],   // Jun Jul Aug
+            fall:   [8,9,10],  // Sep Oct Nov
+            winter: [11,0,1],  // Dec Jan Feb
+        };
+        const SEASON_ICONS = { spring: '🌸', summer: '☀️', fall: '🍂', winter: '❄️' };
+
+        async function loadSeasonalHighlights() {
+            const month = new Date().getMonth();
+            const currentSeason = Object.entries(SEASON_MONTHS).find(([, months]) => months.includes(month))?.[0];
+            if (!currentSeason) return;
+
+            try {
+                const res  = await fetch(`/api/plants/filter?bloom_season=${currentSeason}&blooms=true`);
+                const data = await res.json();
+                if (!data.plants || data.plants.length === 0) return;
+
+                // Pick up to 6 random plants to show as chips
+                const shuffled = data.plants.sort(() => Math.random() - 0.5).slice(0, 6);
+                const bar    = document.getElementById('seasonal-bar');
+                const label  = document.getElementById('seasonal-label');
+                const chips  = document.getElementById('seasonal-chips');
+
+                label.textContent = `${SEASON_ICONS[currentSeason]} Blooming this ${currentSeason}:`;
+                chips.innerHTML = shuffled.map(p =>
+                    `<span class="season-chip" onclick="openPlantDetail(${p.id})">${escHtml(p.common_name)}</span>`
+                ).join('')
+                + `<span class="season-chip" style="border-style:dashed" onclick="openSeasonBrowse('${currentSeason}')">See all ${data.total} →</span>`;
+
+                bar.style.display = 'flex';
+            } catch { /* silently skip if api not ready */ }
+        }
+        function dismissSeasonal() {
+            document.getElementById('seasonal-bar').style.display = 'none';
+        }
+        function openSeasonBrowse(season) {
+            // Send as a chat question for a richer AI response
+            questionEl.value = `What plants do you carry that bloom in ${season}?`;
+            suggestions.style.display = 'none';
+            sendQuestion();
+        }
+
+        // ── Similar Plants ─────────────────────────────────────────
+        function askSimilar(id, name) {
+            closePlantDetail();
+            // Close browse panel if open
+            document.getElementById('browse-panel').classList.remove('open');
+            // Pre-fill and send question
+            const question = `What plants do you carry that are similar to ${name}?`;
+            questionEl.value = question;
+            suggestions.style.display = 'none';
+            sendQuestion();
+        }
+
+        // Load seasonal highlights on startup
+        loadSeasonalHighlights();
+
         // ── Browse Catalog ───────────────────────────────────────────
         let filterTimer;
 
@@ -1231,6 +1332,7 @@ Knockout Rose</pre>
                     <div class="detail-section-title">Description</div>
                     <div class="detail-description">${escHtml(p.description)}</div>
                 </div>` : ''}
+                <button class="similar-btn" onclick="askSimilar(${p.id}, ${JSON.stringify(escHtml(p.common_name || 'this plant'))})">Find plants similar to this →</button>
             `;
         }
     </script>

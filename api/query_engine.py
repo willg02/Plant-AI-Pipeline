@@ -89,6 +89,17 @@ class QueryEngine:
         self.db = db
         self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
+    def _get_custom_instructions(self) -> str:
+        """Load admin-managed custom instructions from the config table, if any."""
+        try:
+            from database.schema import AppConfig
+            row = self.db.query(AppConfig).filter(AppConfig.key == "custom_instructions").first()
+            if row and row.value and row.value.strip():
+                return "\n\nLOCAL NURSERY NOTES (these override general horticultural advice):\n" + row.value.strip()
+        except Exception:
+            pass
+        return ""
+
     def ask(self, question: str, history: list[dict] | None = None) -> dict:
         """
         Full pipeline: question → SQL → results → natural language answer.
@@ -183,10 +194,13 @@ class QueryEngine:
             "content": ANSWER_USER_TEMPLATE.format(plant_data=plant_data, question=question),
         })
 
+        # Append any admin-configured local nursery notes to the answer system prompt
+        answer_system = ANSWER_SYSTEM + self._get_custom_instructions()
+
         response = self.client.messages.create(
             model=CLAUDE_MODEL,
             max_tokens=1024,
-            system=ANSWER_SYSTEM,
+            system=answer_system,
             messages=messages,
         )
         return response.content[0].text.strip()

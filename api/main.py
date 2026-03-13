@@ -2,13 +2,14 @@
 FastAPI backend — serves the chat interface and handles AI queries.
 """
 
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends, Query, Header, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
 
+from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, ADMIN_PASSWORD
 from database import Base, engine, get_db
 from database.connection import SessionLocal
 from api.query_engine import QueryEngine
@@ -157,6 +158,73 @@ def add_plants(req: AddPlantsRequest):
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 
+# ── Admin helpers ─────────────────────────────────────────────────────────
+def require_admin(x_admin_password: str = Header(...)):
+    """Dependency that validates the admin password header."""
+    if x_admin_password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Invalid admin password")
+
+
+class PlantUpdateRequest(BaseModel):
+    fields: dict  # arbitrary {column: value} pairs to update
+
+
+class ConfigRequest(BaseModel):
+    value: str
+
+
+@app.put("/api/admin/plants/{plant_id}")
+def admin_update_plant(
+    plant_id: int,
+    req: PlantUpdateRequest,
+    db: Session = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    """Update any set of fields on a plant. Only known column names are applied."""
+    from database.schema import Plant
+    plant = db.query(Plant).filter(Plant.id == plant_id).first()
+    if not plant:
+        raise HTTPException(status_code=404, detail="Plant not found")
+    allowed = {c.name for c in Plant.__table__.columns} - {"id"}
+    updated = []
+    for col, val in req.fields.items():
+        if col in allowed:
+            setattr(plant, col, val)
+            updated.append(col)
+    db.commit()
+    db.refresh(plant)
+    return {"updated": updated, "plant": plant.to_dict()}
+
+
+@app.get("/api/admin/config")
+def admin_get_config(
+    db: Session = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    """Return all admin config values."""
+    from database.schema import AppConfig
+    rows = db.query(AppConfig).all()
+    return {r.key: r.value for r in rows}
+
+
+@app.put("/api/admin/config/{key}")
+def admin_set_config(
+    key: str,
+    req: ConfigRequest,
+    db: Session = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    """Upsert a config value."""
+    from database.schema import AppConfig
+    row = db.query(AppConfig).filter(AppConfig.key == key).first()
+    if row:
+        row.value = req.value
+    else:
+        db.add(AppConfig(key=key, value=req.value))
+    db.commit()
+    return {"key": key, "saved": True}
+
+
 # ── Serve the static chat UI ─────────────────────────────────────────────
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -164,3 +232,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 def serve_ui():
     return FileResponse("static/index.html")
+
+
+@app.get("/admin")
+def serve_admin():
+    return FileResponse("static/admin.html")

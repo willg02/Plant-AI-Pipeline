@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Admin</title>
+    <style>
+        :root {
+            --bg:        #f5f7f0;
+            --surface:   #ffffff;
+            --primary:   #2d6a4f;
+            --primary-l: #40916c;
+            --accent:    #95d5b2;
+            --text:      #1b4332;
+            --text-muted:#6c757d;
+            --border:    #dee2e6;
+            --shadow:    0 2px 8px rgba(0,0,0,0.08);
+            --danger:    #dc3545;
+            --warn-bg:   #fff3cd;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg); color: var(--text);
+            height: 100vh; display: flex; flex-direction: column;
+        }
+        header {
+            background: var(--primary); color: white;
+            padding: 14px 24px; display: flex; align-items: center; gap: 14px;
+            box-shadow: var(--shadow); flex-shrink: 0;
+        }
+        header .logo { font-size: 24px; }
+        header h1 { font-size: 18px; font-weight: 700; }
+        header .badge {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+            padding: 3px 10px; border-radius: 10px; font-size: 12px;
+        }
+        #logout-btn {
+            margin-left: auto; background: rgba(255,255,255,0.15);
+            color: white; border: 1px solid rgba(255,255,255,0.4);
+            padding: 5px 14px; border-radius: 10px; font-size: 13px;
+            font-weight: 600; cursor: pointer;
+        }
+        #logout-btn:hover { background: rgba(255,255,255,0.3); }
+        a.home-link {
+            color: rgba(255,255,255,0.85); font-size: 13px; text-decoration: none;
+        }
+        a.home-link:hover { color: white; }
+
+        /* ── Login screen ─────────────────────── */
+        #login-screen {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+        }
+        .login-card {
+            background: var(--surface); border-radius: 16px;
+            padding: 40px 36px; width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            display: flex; flex-direction: column; gap: 16px; text-align: center;
+        }
+        .login-card h2 { font-size: 20px; color: var(--primary); }
+        .login-card p  { font-size: 13px; color: var(--text-muted); }
+        #login-pw {
+            width: 100%; padding: 10px 14px; border: 2px solid var(--border);
+            border-radius: 10px; font-size: 15px; outline: none; text-align: center;
+            letter-spacing: 0.1em;
+        }
+        #login-pw:focus { border-color: var(--primary-l); }
+        #login-btn {
+            padding: 11px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+        }
+        #login-btn:hover { background: var(--primary-l); }
+        #login-error { color: var(--danger); font-size: 13px; min-height: 16px; }
+
+        /* ── Main admin layout ───────────────── */
+        #admin-main { flex: 1; display: none; overflow: hidden; }
+        #admin-main.visible { display: flex; }
+
+        /* ── Tabs ────────────────────────────── */
+        .tab-bar {
+            display: flex; gap: 0; background: var(--surface);
+            border-bottom: 2px solid var(--border); flex-shrink: 0;
+            padding: 0 24px;
+        }
+        .tab {
+            padding: 12px 20px; font-size: 14px; font-weight: 600;
+            cursor: pointer; border-bottom: 3px solid transparent;
+            margin-bottom: -2px; color: var(--text-muted);
+            transition: all 0.2s; user-select: none;
+        }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab:hover:not(.active) { color: var(--text); }
+
+        .tab-content { display: none; flex: 1; overflow: hidden; }
+        .tab-content.active { display: flex; }
+
+        /* ── Plants tab layout ───────────────── */
+        #tab-plants {
+            flex-direction: row;
+        }
+        .plant-list-panel {
+            width: 300px; flex-shrink: 0; background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .panel-search {
+            padding: 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .panel-search input {
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 13px; outline: none;
+        }
+        .panel-search input:focus { border-color: var(--primary-l); }
+        .plant-list {
+            flex: 1; overflow-y: auto;
+        }
+        .plant-list-item {
+            padding: 10px 16px; border-bottom: 1px solid #f0f0f0;
+            cursor: pointer; font-size: 13px; transition: background 0.15s;
+        }
+        .plant-list-item:hover { background: var(--bg); }
+        .plant-list-item.selected { background: #e8f4ec; font-weight: 600; }
+        .plant-list-item .pli-type {
+            font-size: 11px; color: var(--text-muted); margin-top: 2px;
+        }
+        #plant-list-count {
+            padding: 8px 16px; font-size: 12px; color: var(--text-muted);
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+
+        /* ── Edit panel ──────────────────────── */
+        .plant-edit-panel {
+            flex: 1; overflow-y: auto; padding: 28px 32px;
+        }
+        .edit-placeholder {
+            color: var(--text-muted); font-size: 15px;
+            text-align: center; margin-top: 80px;
+        }
+        .edit-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 16px; margin-bottom: 24px;
+        }
+        .edit-header-text h2 { font-size: 20px; font-weight: 700; }
+        .edit-header-text p  { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 3px; }
+        .save-btn {
+            padding: 10px 24px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; white-space: nowrap; flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        .save-btn:hover { background: var(--primary-l); }
+        .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #save-msg {
+            font-size: 13px; padding: 4px 0;
+            min-height: 20px; font-weight: 600;
+        }
+        .save-ok  { color: var(--primary); }
+        .save-err { color: var(--danger); }
+
+        .edit-section { margin-bottom: 28px; }
+        .edit-section-title {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.07em; color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px; margin-bottom: 14px;
+        }
+        .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .edit-field { display: flex; flex-direction: column; gap: 4px; }
+        .edit-field.full-width { grid-column: 1 / -1; }
+        .edit-field label {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.05em; color: var(--text-muted);
+        }
+        .edit-field input[type="text"],
+        .edit-field input[type="number"],
+        .edit-field select,
+        .edit-field textarea {
+            padding: 8px 10px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 13px; font-family: inherit;
+            background: var(--bg); outline: none; width: 100%;
+        }
+        .edit-field input:focus,
+        .edit-field select:focus,
+        .edit-field textarea:focus { border-color: var(--primary-l); background: white; }
+        .edit-field textarea { min-height: 80px; resize: vertical; }
+        .edit-field .bool-row {
+            display: flex; align-items: center; gap: 8px; height: 36px;
+        }
+        .edit-field .bool-row input { accent-color: var(--primary); width: 16px; height: 16px; }
+        .edit-field .bool-row label { font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--text); }
+
+        /* ── AI Instructions tab ─────────────── */
+        #tab-ai {
+            flex-direction: column; padding: 32px; gap: 20px; overflow-y: auto;
+        }
+        #tab-ai h2 { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .ai-desc {
+            background: var(--warn-bg); border: 1px solid #ffc107;
+            border-radius: 10px; padding: 14px 16px; font-size: 13px; line-height: 1.6;
+        }
+        .ai-desc strong { color: #856404; }
+        #ai-instructions {
+            width: 100%; min-height: 260px; padding: 14px;
+            border: 2px solid var(--border); border-radius: 10px;
+            font-size: 14px; font-family: inherit; line-height: 1.6;
+            resize: vertical; outline: none;
+        }
+        #ai-instructions:focus { border-color: var(--primary-l); }
+        .ai-actions { display: flex; align-items: center; gap: 14px; }
+        #ai-save-btn {
+            padding: 10px 28px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+        }
+        #ai-save-btn:hover { background: var(--primary-l); }
+        #ai-save-msg { font-size: 13px; font-weight: 600; }
+        .ai-examples { display: flex; flex-direction: column; gap: 8px; }
+        .ai-example {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 10px 14px; font-size: 13px;
+            cursor: pointer; transition: border-color 0.2s;
+            line-height: 1.5;
+        }
+        .ai-example:hover { border-color: var(--primary-l); }
+        .ai-example strong { color: var(--primary); display: block; margin-bottom: 3px; font-size: 12px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">🌿</div>
+    <h1>Plant Admin</h1>
+    <span class="badge" id="header-badge" style="display:none">Admin Mode</span>
+    <a class="home-link" href="/" style="margin-left:auto; margin-right: 12px;">← Back to Advisor</a>
+    <button id="logout-btn" style="display:none" onclick="logout()">Log Out</button>
+</header>
+
+<!-- ── Login ── -->
+<div id="login-screen">
+    <div class="login-card">
+        <div style="font-size:40px">🔐</div>
+        <h2>Admin Login</h2>
+        <p>Enter your admin password to manage the plant database and AI settings.</p>
+        <input type="password" id="login-pw" placeholder="Admin password"
+               onkeydown="if(event.key==='Enter') doLogin()" />
+        <button id="login-btn" onclick="doLogin()">Sign In</button>
+        <div id="login-error"></div>
+    </div>
+</div>
+
+<!-- ── Main admin area ── -->
+<div id="admin-main">
+    <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="tab-bar">
+            <div class="tab active" onclick="switchTab('plants')">🌱 Edit Plants</div>
+            <div class="tab" onclick="switchTab('ai')">🤖 AI Instructions</div>
+        </div>
+
+        <!-- Plants Tab -->
+        <div id="tab-plants" class="tab-content active">
+            <div class="plant-list-panel">
+                <div class="panel-search">
+                    <input id="list-search" placeholder="Search plants…" oninput="filterList()" />
+                </div>
+                <div id="plant-list-count">Loading…</div>
+                <div class="plant-list" id="plant-list"></div>
+            </div>
+            <div class="plant-edit-panel" id="edit-panel">
+                <div class="edit-placeholder">← Select a plant to edit its details</div>
+            </div>
+        </div>
+
+        <!-- AI Instructions Tab -->
+        <div id="tab-ai" class="tab-content">
+            <h2>🤖 AI Custom Instructions</h2>
+            <div class="ai-desc">
+                <strong>What this does:</strong> Anything you write here is added to the AI's system prompt every time someone asks a question. Use it to communicate local climate knowledge, how you market certain plants, and any overrides to general horticultural advice.<br><br>
+                The AI will follow these notes even when they differ from typical recommendations.
+            </div>
+            <div>
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text-muted)">QUICK EXAMPLES — click to append</div>
+                <div class="ai-examples">
+                    <div class="ai-example" onclick="appendExample(this)">
+                        <strong>Sun tolerance</strong>Encore/rebloom azaleas perform well in full sun in our climate (zone 8b). We recommend them confidently for full sun locations.
+                    </div>
+                    <div class="ai-example" onclick="appendExample(this)">
+                        <strong>Climate note</strong>We are located in zone 8b (coastal Southeast). Summers are hot and humid. Plants rated to zone 7 generally perform reliably here.
+                    </div>
+                    <div class="ai-example" onclick="appendExample(this)">
+                        <strong>Watering recommendation</strong>All new plantings need regular irrigation for the first season regardless of their long-term drought tolerance rating.
+                    </div>
+                    <div class="ai-example" onclick="appendExample(this)">
+                        <strong>Local preference</strong>Customers often ask about low-maintenance options. Prioritize evergreen shrubs and ornamental grasses when recommending easy-care plants.
+                    </div>
+                </div>
+            </div>
+            <textarea id="ai-instructions" placeholder="Type your custom nursery/climate instructions here…"></textarea>
+            <div class="ai-actions">
+                <button id="ai-save-btn" onclick="saveAiInstructions()">Save Instructions</button>
+                <div id="ai-save-msg"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let adminPassword = '';
+    let allPlants = [];
+    let currentPlantId = null;
+
+    // ── Auth ─────────────────────────────────────────────────────────────
+    async function doLogin() {
+        const pw = document.getElementById('login-pw').value.trim();
+        if (!pw) return;
+        // Quick validation: try a real admin endpoint
+        try {
+            const res = await fetch('/api/admin/config', {
+                headers: { 'x-admin-password': pw }
+            });
+            if (res.status === 401) {
+                document.getElementById('login-error').textContent = 'Incorrect password.';
+                return;
+            }
+            adminPassword = pw;
+            const cfg = await res.json();
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-main').classList.add('visible');
+            document.getElementById('header-badge').style.display = '';
+            document.getElementById('logout-btn').style.display = '';
+            // Load AI instructions if saved
+            if (cfg.custom_instructions) {
+                document.getElementById('ai-instructions').value = cfg.custom_instructions;
+            }
+            loadPlants();
+        } catch {
+            document.getElementById('login-error').textContent = 'Server error. Is the API running?';
+        }
+    }
+    function logout() {
+        adminPassword = '';
+        location.reload();
+    }
+
+    // ── Tabs ─────────────────────────────────────────────────────────────
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            const names = ['plants', 'ai'];
+            t.classList.toggle('active', names[i] === name);
+        });
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.toggle('active', el.id === 'tab-' + name);
+        });
+    }
+
+    // ── Plant list ────────────────────────────────────────────────────────
+    async function loadPlants() {
+        const res = await fetch('/api/plants/filter?', { headers: { 'x-admin-password': adminPassword } });
+        const data = await res.json();
+        allPlants = data.plants;
+        renderList(allPlants);
+    }
+    function filterList() {
+        const q = document.getElementById('list-search').value.toLowerCase();
+        const filtered = q ? allPlants.filter(p =>
+            (p.common_name || '').toLowerCase().includes(q) ||
+            (p.scientific_name || '').toLowerCase().includes(q)
+        ) : allPlants;
+        renderList(filtered);
+    }
+    function renderList(plants) {
+        document.getElementById('plant-list-count').textContent =
+            `${plants.length} of ${allPlants.length} plants`;
+        const list = document.getElementById('plant-list');
+        list.innerHTML = plants.map(p => `
+            <div class="plant-list-item${p.id === currentPlantId ? ' selected' : ''}"
+                 onclick="selectPlant(${p.id})">
+                ${escHtml(p.common_name || '—')}
+                <div class="pli-type">${p.plant_type || ''} ${p.scientific_name ? '· ' + p.scientific_name : ''}</div>
+            </div>
+        `).join('');
+    }
+
+    function selectPlant(id) {
+        currentPlantId = id;
+        // Update selected style in list
+        document.querySelectorAll('.plant-list-item').forEach(el => {
+            el.classList.toggle('selected', el.getAttribute('onclick') === `selectPlant(${id})`);
+        });
+        const plant = allPlants.find(p => p.id === id);
+        if (plant) renderEditForm(plant);
+    }
+
+    // ── Edit form ─────────────────────────────────────────────────────────
+    function renderEditForm(p) {
+        const panel = document.getElementById('edit-panel');
+        panel.innerHTML = `
+            <div class="edit-header">
+                <div class="edit-header-text">
+                    <h2>${escHtml(p.common_name || '—')}</h2>
+                    <p>${p.scientific_name ? escHtml(p.scientific_name) : 'No scientific name'} &nbsp;·&nbsp; ID #${p.id}</p>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                    <button class="save-btn" id="save-btn" onclick="savePlant()">Save Changes</button>
+                    <div id="save-msg"></div>
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">Identity</div>
+                <div class="edit-grid">
+                    ${textField('common_name', 'Common Name', p.common_name)}
+                    ${textField('scientific_name', 'Scientific Name', p.scientific_name)}
+                    ${selectField('plant_type', 'Plant Type', p.plant_type, ['shrub','tree','perennial','annual','grass','groundcover','vine','fern','bulb','palm','succulent'])}
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">Size (feet)</div>
+                <div class="edit-grid">
+                    ${numField('mature_height_min_ft', 'Height Min', p.mature_height_min_ft)}
+                    ${numField('mature_height_max_ft', 'Height Max', p.mature_height_max_ft)}
+                    ${numField('mature_width_min_ft', 'Width Min', p.mature_width_min_ft)}
+                    ${numField('mature_width_max_ft', 'Width Max', p.mature_width_max_ft)}
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">Sun, Water &amp; Growth</div>
+                <div class="edit-grid">
+                    ${textField('sun_exposure', 'Sun Exposure', p.sun_exposure, 'e.g. full_sun, partial_sun')}
+                    ${selectField('water_needs', 'Water Needs', p.water_needs, ['low','moderate','high'])}
+                    ${selectField('growth_rate', 'Growth Rate', p.growth_rate, ['slow','moderate','fast'])}
+                    ${numField('hardiness_zone_min', 'Zone Min', p.hardiness_zone_min)}
+                    ${numField('hardiness_zone_max', 'Zone Max', p.hardiness_zone_max)}
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">Traits</div>
+                <div class="edit-grid">
+                    ${boolField('blooms', 'Blooms', p.blooms)}
+                    ${boolField('evergreen', 'Evergreen', p.evergreen)}
+                    ${boolField('deer_resistant', 'Deer Resistant', p.deer_resistant)}
+                    ${boolField('drought_tolerant', 'Drought Tolerant', p.drought_tolerant)}
+                    ${boolField('fragrant', 'Fragrant', p.fragrant)}
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">Bloom Details</div>
+                <div class="edit-grid">
+                    ${textField('bloom_color', 'Bloom Color', p.bloom_color)}
+                    ${textField('bloom_season', 'Bloom Season', p.bloom_season, 'e.g. spring, summer')}
+                    ${textField('foliage_color', 'Foliage Color', p.foliage_color)}
+                    ${textField('fall_color', 'Fall Color', p.fall_color)}
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">Use &amp; Notes</div>
+                <div class="edit-grid">
+                    <div class="edit-field full-width">
+                        <label>Landscape Use</label>
+                        <input type="text" id="f_landscape_use" value="${escAttr(p.landscape_use)}"
+                               placeholder="e.g. border, hedge, foundation, container" />
+                    </div>
+                    ${textField('native_region', 'Native Region', p.native_region)}
+                    <div class="edit-field full-width">
+                        <label>Description</label>
+                        <textarea id="f_description">${escHtml(p.description || '')}</textarea>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function textField(key, label, val, placeholder) {
+        return `<div class="edit-field">
+            <label>${escHtml(label)}</label>
+            <input type="text" id="f_${key}" value="${escAttr(val)}" placeholder="${placeholder || ''}" />
+        </div>`;
+    }
+    function numField(key, label, val) {
+        return `<div class="edit-field">
+            <label>${escHtml(label)}</label>
+            <input type="number" id="f_${key}" value="${val !== null && val !== undefined ? val : ''}" step="0.5" />
+        </div>`;
+    }
+    function selectField(key, label, val, options) {
+        const opts = ['', ...options].map(o =>
+            `<option value="${escAttr(o)}"${o === val ? ' selected' : ''}>${o || '— none —'}</option>`
+        ).join('');
+        return `<div class="edit-field">
+            <label>${escHtml(label)}</label>
+            <select id="f_${key}">${opts}</select>
+        </div>`;
+    }
+    function boolField(key, label, val) {
+        return `<div class="edit-field">
+            <label>${escHtml(label)}</label>
+            <div class="bool-row">
+                <select id="f_${key}">
+                    <option value=""${val === null || val === undefined ? ' selected' : ''}>— unknown —</option>
+                    <option value="true"${val === true ? ' selected' : ''}>Yes</option>
+                    <option value="false"${val === false ? ' selected' : ''}>No</option>
+                </select>
+            </div>
+        </div>`;
+    }
+
+    async function savePlant() {
+        if (!currentPlantId) return;
+        const plant = allPlants.find(p => p.id === currentPlantId);
+        if (!plant) return;
+
+        const btn = document.getElementById('save-btn');
+        const msg = document.getElementById('save-msg');
+        btn.disabled = true;
+        msg.textContent = 'Saving…';
+        msg.className = '';
+
+        // Collect all field values
+        const fields = {};
+        const textKeys = ['common_name','scientific_name','plant_type','sun_exposure',
+                          'water_needs','growth_rate','bloom_color','bloom_season',
+                          'foliage_color','fall_color','landscape_use','native_region','description'];
+        const numKeys  = ['mature_height_min_ft','mature_height_max_ft',
+                          'mature_width_min_ft','mature_width_max_ft',
+                          'hardiness_zone_min','hardiness_zone_max'];
+        const boolKeys = ['blooms','evergreen','deer_resistant','drought_tolerant','fragrant'];
+
+        textKeys.forEach(k => {
+            const el = document.getElementById('f_' + k);
+            if (el) fields[k] = el.value.trim() || null;
+        });
+        numKeys.forEach(k => {
+            const el = document.getElementById('f_' + k);
+            if (el) fields[k] = el.value !== '' ? parseFloat(el.value) : null;
+        });
+        boolKeys.forEach(k => {
+            const el = document.getElementById('f_' + k);
+            if (el) {
+                fields[k] = el.value === 'true' ? true : el.value === 'false' ? false : null;
+            }
+        });
+
+        try {
+            const res = await fetch(`/api/admin/plants/${currentPlantId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': adminPassword,
+                },
+                body: JSON.stringify({ fields }),
+            });
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            // Update local cache
+            const idx = allPlants.findIndex(p => p.id === currentPlantId);
+            if (idx !== -1) allPlants[idx] = data.plant;
+            renderList(
+                document.getElementById('list-search').value
+                    ? allPlants.filter(p => (p.common_name||'').toLowerCase().includes(document.getElementById('list-search').value.toLowerCase()))
+                    : allPlants
+            );
+            msg.textContent = '✓ Saved!';
+            msg.className = 'save-ok';
+        } catch (err) {
+            msg.textContent = '✗ Error: ' + err.message;
+            msg.className = 'save-err';
+        }
+        btn.disabled = false;
+    }
+
+    // ── AI Instructions ───────────────────────────────────────────────────
+    function appendExample(el) {
+        const content = el.querySelector('strong').nextSibling.textContent.trim();
+        const ta = document.getElementById('ai-instructions');
+        ta.value = (ta.value.trim() ? ta.value.trim() + '\n\n' : '') + content;
+        ta.focus();
+    }
+
+    async function saveAiInstructions() {
+        const value = document.getElementById('ai-instructions').value;
+        const btn = document.getElementById('ai-save-btn');
+        const msg = document.getElementById('ai-save-msg');
+        btn.disabled = true;
+        msg.textContent = '';
+        try {
+            const res = await fetch('/api/admin/config/custom_instructions', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': adminPassword,
+                },
+                body: JSON.stringify({ value }),
+            });
+            if (!res.ok) throw new Error(await res.text());
+            msg.textContent = '✓ Saved — AI will use these on the next question';
+            msg.style.color = 'var(--primary)';
+        } catch {
+            msg.textContent = '✗ Save failed';
+            msg.style.color = 'var(--danger)';
+        }
+        btn.disabled = false;
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function escHtml(str) {
+        return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function escAttr(str) {
+        return String(str ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+    }
+</script>
+</body>
+</html>

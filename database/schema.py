@@ -4,6 +4,14 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
+class AppConfig(Base):
+    """Key/value store for admin-managed settings (e.g. custom AI instructions)."""
+    __tablename__ = "app_config"
+
+    key   = Column(String(100), primary_key=True)
+    value = Column(Text, nullable=True)
+
+
 class Plant(Base):
     __tablename__ = "plants"
 
